@@ -15,8 +15,20 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // Roles & Status
+            $table->enum('role', ['super_admin', 'admin', 'dosen', 'mahasiswa', 'alumni'])
+                  ->default('mahasiswa');
+            $table->enum('status', ['active', 'inactive', 'graduated'])
+                  ->default('active');
+
+            // Identitas Akademik (Nullable karena admin tidak butuh ini)
+            $table->string('nim')->nullable()->unique(); // Untuk Mahasiswa/Alumni
+            $table->string('nip')->nullable()->unique(); // Untuk Dosen
+            $table->year('angkatan')->nullable();
+            $table->year('tahun_lulus')->nullable(); // Trigger perubahan role Mahasiswa -> Alumni
+
             $table->rememberToken();
             $table->timestamps();
         });
