@@ -15,11 +15,13 @@ return [
     |
     */
 
-    'paths' => ['*'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'login', 'logout', 'register'], // Pastikan sanctum ada
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
+    'allowed_origins' => [
+        'http://localhost:5173', // Origin Frontend Vite
+    ],
 
     'allowed_origins_patterns' => [],
 
@@ -29,6 +31,5 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => true,
-
+    'supports_credentials' => true, // <--- WAJIB TRUE untuk Cookie/CSRF
 ];

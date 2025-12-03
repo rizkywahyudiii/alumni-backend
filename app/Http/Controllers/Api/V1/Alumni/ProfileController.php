@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\Alumni;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -30,20 +31,34 @@ class ProfileController extends Controller
             'gender' => 'nullable|in:L,P',
             'date_of_birth' => 'nullable|date',
 
-            // Validasi JSON Privacy Settings
+            // Validasi Foto
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Max 2MB
+
             'privacy_settings' => 'nullable|array',
-            'privacy_settings.show_in_directory' => 'boolean',
-            'privacy_settings.show_email' => 'boolean',
-            'privacy_settings.allow_contact' => 'boolean',
         ]);
 
         /** @var User $user */
         $user = $request->user();
 
-        // Update atau Create jika belum ada (safety)
+        // LOGIC UPLOAD FOTO (Menimpa file lama)
+        if ($request->hasFile('avatar')) {
+            // 1. Hapus foto lama jika ada (biar gak nyampah)
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            // 2. Simpan foto baru
+            $path = $request->file('avatar')->store('avatars', 'public');
+
+            // 3. Simpan path ke database user
+            $user->avatar = $path;
+            $user->save();
+        }
+
+        // Update data profil lainnya (AlumniProfile)
         $user->alumniProfile()->updateOrCreate(
-            ['user_id' => $user->id], // Kunci pencarian
-            $validated // Data yang diupdate
+            ['user_id' => $user->id],
+            collect($validated)->except(['avatar'])->toArray() // Exclude avatar dari update profil
         );
 
         return response()->json([

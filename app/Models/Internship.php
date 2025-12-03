@@ -9,12 +9,16 @@ class Internship extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'user_id', 'company_name', 'company_id', 'title',
+        'start_date', 'end_date', 'description',
+        'is_public' // Tambahan
+    ];
 
-    // Auto-convert kolom tanggal jadi object Carbon (biar gampang diformat)
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+        'is_public' => 'boolean', // Tambahan
     ];
 
     // Relasi: Magang milik satu User
