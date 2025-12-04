@@ -79,4 +79,17 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Skill::class, 'user_skills');
     }
+
+    public function tracerStudy()
+    {
+        // HasOne jika diasumsikan 1 alumni hanya punya 1 data tracer terkini
+        // Atau HasMany jika mau mencatat riwayat pekerjaan (Career History)
+        // Untuk simpelnya Tracer Study biasanya HasOne (update data terbaru)
+        return $this->hasOne(TracerStudy::class);
+    }
+
+    public function jobs()
+    {
+        return $this->hasMany(Job::class);
+    }
 }

@@ -20,7 +20,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         ]);
 
-        //
+        // baris ini untuk mematikan CSRF di semua route yang berawalan 'api/*'
+        $middleware->validateCsrfTokens(except: [
+            'api/*',      // Semua route yang depannya 'api/' bebas CSRF
+            'login',      // Jaga-jaga kalau route login kamu di root
+            'logout',
+            'sanctum/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

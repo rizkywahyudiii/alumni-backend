@@ -5,34 +5,59 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): Response
+
+    public function store(Request $request): JsonResponse
     {
-        $request->authenticate();
+        // 1. Validasi Input Biasa
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-        $request->session()->regenerate();
+        // 2. Cek Credential Manual (Tanpa Session/Cookie)
+        // Auth::attempt akan mengecek email & password ke database
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json([
+                'message' => 'Email atau password salah.'
+            ], 401);
+        }
 
-        return response()->noContent();
+        // 3. Ambil User
+        $user = User::where('email', $request->email)->firstOrFail();
+
+        // 4. Hapus Token Lama (Opsional: Agar 1 user cuma punya 1 token aktif)
+        // $user->tokens()->delete();
+
+        // 5. Buat Token Baru
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login success',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user
+        ]);
     }
 
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): Response
+    public function destroy(Request $request): JsonResponse
     {
-        Auth::guard('web')->logout();
+        // Hapus token user saat ini (current access token)
+        $request->user()->currentAccessToken()->delete();
 
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Logout success'
+        ]);
     }
 }
