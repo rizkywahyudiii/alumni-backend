@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\Alumni\TracerStudyController;
 use App\Http\Controllers\Api\V1\Alumni\JobController;
 use App\Http\Controllers\Api\V1\Alumni\DashboardController;
 use App\Http\Controllers\Api\V1\Alumni\DirectoryController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Resources\UserResource;
 
 /*
@@ -18,11 +19,21 @@ use App\Http\Resources\UserResource;
 |--------------------------------------------------------------------------
 */
 
+// 0. Public Auth Routes (Login/Register) - HARUS di atas middleware auth
+Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+    ->middleware('guest')
+    ->name('api.login');
+
 // 1. Route User (Standard Laravel/Breeze)
 // Ini dipanggil Frontend setelah login untuk ambil data user
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return new UserResource($request->user()->load('alumniProfile'));
 });
+
+// 2. Logout Route (Protected)
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->middleware('auth:sanctum')
+    ->name('api.logout');
 
 // 2. Public Routes (Master Data)
 Route::prefix('v1')->group(function () {
