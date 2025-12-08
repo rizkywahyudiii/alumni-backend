@@ -15,70 +15,73 @@ use App\Http\Resources\UserResource;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes
+| API Routes (RBAC Implemented)
 |--------------------------------------------------------------------------
 */
 
-// 0. Public Auth Routes (Login/Register) - HARUS di atas middleware auth
+// --- 0. PUBLIC ROUTES (No Auth Required) ---
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware('guest')
     ->name('api.login');
 
-// 1. Route User (Standard Laravel/Breeze)
-// Ini dipanggil Frontend setelah login untuk ambil data user
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return new UserResource($request->user()->load('alumniProfile'));
-});
-
-// 2. Logout Route (Protected)
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-    ->middleware('auth:sanctum')
-    ->name('api.logout');
-
-// 2. Public Routes (Master Data)
 Route::prefix('v1')->group(function () {
     Route::get('/industries', [MasterDataController::class, 'industries']);
     Route::get('/skills', [MasterDataController::class, 'skills']);
     Route::get('/companies', [MasterDataController::class, 'companies']);
 });
 
-// 3. Protected Routes (Butuh Login)
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+// --- PROTECTED ROUTES (Require Valid Token) ---
+Route::middleware(['auth:sanctum'])->group(function () {
 
-    // Group Alumni
-    Route::prefix('alumni')->group(function () {
+    // 1. GLOBAL AUTH ROUTES (Accessible by ALL Roles)
+    Route::get('/user', function (Request $request) {
+        return new UserResource($request->user()->load('alumniProfile'));
+    });
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('api.logout');
 
-        // Dashboard
-        Route::get('/dashboard/stats', [DashboardController::class, 'index']);
 
-        // Employment
-        Route::get('/employments', [EmploymentController::class, 'index']);
-        Route::post('/employments', [EmploymentController::class, 'store']);
-        Route::put('/employments/{employment}', [EmploymentController::class, 'update']);
-        Route::delete('/employments/{employment}', [EmploymentController::class, 'destroy']);
+    // --- V1 API GROUP ---
+    Route::prefix('v1/alumni')->group(function () {
 
-        // Internship
-        Route::get('/internships', [InternshipController::class, 'index']);
-        Route::post('/internships', [InternshipController::class, 'store']);
-        Route::put('/internships/{internship}', [InternshipController::class, 'update']);
-        Route::delete('/internships/{internship}', [InternshipController::class, 'destroy']);
+        // A. SHARED FEATURES (Alumni, Dosen, Admin, Mahasiswa)
+        // ---------------------------------------------------
+        // Semua user login bisa lihat direktori dan detail job
+        Route::get('/directory', [DirectoryController::class, 'index']);
+        Route::get('/directory/{id}', [DirectoryController::class, 'show']);
 
-        // Profile (Update Data Diri)
+        Route::get('/jobs', [JobController::class, 'index']);      // List Lowongan
+        Route::get('/jobs/{id}', [JobController::class, 'show']);  // Detail Lowongan
+
+        Route::get('/dashboard/stats', [DashboardController::class, 'index']); // Dashboard Stats (Logic filter ada di Controller)
+
+        // Profile Sendiri (Semua user punya profile dasar)
         Route::get('/profile', [ProfileController::class, 'show']);
         Route::put('/profile', [ProfileController::class, 'update']);
 
-        // Route Tracer Study
-        Route::post('/tracer-study', [TracerStudyController::class, 'store']); // Simpan/Update
-        Route::get('/tracer-study/me', [TracerStudyController::class, 'me']);  // Cek data sendiri
 
-        // === ROUTE JOB PORTAL ===
-        Route::get('/jobs', [JobController::class, 'index']);      // Lihat semua
-        Route::post('/jobs', [JobController::class, 'store']);     // Posting baru
-        Route::get('/jobs/{id}', [JobController::class, 'show']);  // Lihat detail
-        Route::delete('/jobs/{id}', [JobController::class, 'destroy']); // Hapus
+        // B. ALUMNI SPECIFIC FEATURES (Role: ALUMNI Only)
+        // ---------------------------------------------------
+        Route::middleware(['role:alumni,super_admin'])->group(function () {
+            // ^ Hapus ',super_admin' pada baris di atas jika ingin testing strict mode alumni
 
-        Route::get('/directory', [DirectoryController::class, 'index']); // Direktori Alumni
-        Route::get('/directory/{id}', [DirectoryController::class, 'show']); // Detail Alumni
+            // Career Management
+            Route::apiResource('employments', EmploymentController::class);
+            Route::apiResource('internships', InternshipController::class);
+
+            // Tracer Study
+            Route::post('/tracer-study', [TracerStudyController::class, 'store']);
+            Route::get('/tracer-study/me', [TracerStudyController::class, 'me']);
+        });
+
+
+        // C. JOB MANAGEMENT (Role: ALUMNI, ADMIN, SUPER_ADMIN)
+        // ---------------------------------------------------
+        // Mahasiswa & Dosen tidak bisa posting/hapus lowongan
+        Route::middleware(['role:alumni,admin,super_admin'])->group(function () {
+            Route::post('/jobs', [JobController::class, 'store']);
+            Route::delete('/jobs/{id}', [JobController::class, 'destroy']);
+            // Note: Update job mungkin perlu ditambahkan logic kepemilikan di controller
+        });
+
     });
-
 });

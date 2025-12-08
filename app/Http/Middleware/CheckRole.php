@@ -24,6 +24,15 @@ class CheckRole
 
         $user = Auth::user();
 
+        // --- ⚡ GOD MODE SUPER ADMIN ⚡ ---
+        // 👇 Comment blok IF ini jika ingin super_admin juga dicek strict rolenya
+        if ($user->role === 'super_admin') {
+            return $next($request);
+        }
+        // --------------------------------
+
+        $user = Auth::user();
+
         // Jika user tidak punya role yang diizinkan
         if (!in_array($user->role, $roles)) {
             return response()->json([
