@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Alumni; 
+namespace App\Http\Controllers\Api\V1\Alumni;
 
 use App\Http\Controllers\Controller; // biar kenal class Controller utama
 use App\Models\TracerStudy;
@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Exports\TracerStudyExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TracerStudyController extends Controller
 {
@@ -89,5 +91,14 @@ class TracerStudyController extends Controller
         }
 
         return response()->json(['message' => 'Data ditemukan', 'data' => $tracer], 200);
+    }
+
+    /**
+     * Export data Tracer Study ke Excel
+     */
+    public function export()
+    {
+        // Nama file saat didownload
+        return Excel::download(new TracerStudyExport, 'laporan_tracer_study.xlsx');
     }
 }

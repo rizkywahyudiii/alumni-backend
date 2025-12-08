@@ -83,5 +83,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
             // Note: Update job mungkin perlu ditambahkan logic kepemilikan di controller
         });
 
+        // --- D. ADMIN/KAPRODI AREA ---
+        // Pastikan user biasa tidak bisa akses ini!
+        Route::middleware(['role:admin,kaprodi,super_admin'])->group(function () {
+
+            // Export Excel Tracer Study
+            Route::get('/tracer-study/export', [TracerStudyController::class, 'export']);
+
+        });
     });
 });
