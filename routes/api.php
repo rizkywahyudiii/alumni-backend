@@ -85,10 +85,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         // --- D. ADMIN/KAPRODI AREA ---
         // Pastikan user biasa tidak bisa akses ini!
-        Route::middleware(['role:admin,kaprodi,super_admin'])->group(function () {
+        Route::middleware(['role:admin,super_admin'])->prefix('admin')->group(function () {
 
-            // Export Excel Tracer Study
+            // 1. Export Excel Tracer Study
             Route::get('/tracer-study/export', [TracerStudyController::class, 'export']);
+
+            // 2. User Management (CRUD)
+            // Endpoint: GET /users, PUT /users/{id}, DELETE /users/{id}
+            Route::apiResource('users', \App\Http\Controllers\Api\V1\Admin\UserController::class)
+                ->only(['index', 'update', 'destroy']);
 
         });
     });
