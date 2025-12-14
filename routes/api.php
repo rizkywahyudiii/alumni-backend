@@ -18,6 +18,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Api\V1\Shared\MasterDataController;
 
 // --- Controllers: Alumni & Features ---
+use App\Http\Controllers\Api\V1\Admin\CandidateController;
 use App\Http\Controllers\Api\V1\Alumni\DashboardController;
 use App\Http\Controllers\Api\V1\Alumni\DirectoryController;
 use App\Http\Controllers\Api\V1\Alumni\EmploymentController;
@@ -178,6 +179,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
             // User Management
             Route::apiResource('users', UserController::class)
                 ->only(['index', 'update', 'destroy']);
+
+            // Alumni Candidate Management
+            Route::get('/candidates', [CandidateController::class, 'index']);
+            Route::post('/candidates/import', [CandidateController::class, 'import']);
+            Route::get('/candidates/template', [CandidateController::class, 'downloadTemplate']);
         });
 
     });
