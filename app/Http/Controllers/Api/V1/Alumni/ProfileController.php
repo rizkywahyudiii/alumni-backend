@@ -18,13 +18,15 @@ class ProfileController extends Controller
      */
     public function show(Request $request)
     {
-        /** @var User $user */
+        // Jangan pakai User::find(1) atau semacamnya.
         $user = $request->user();
 
-        // Kita load semua relasi yang mungkin dibutuhkan di Frontend
+        // Load data relasi
+        $user->load(['alumniProfile']);
+
         return response()->json([
-            'message' => 'Detail Profil User',
-            'data'    => $user->load(['alumniProfile', 'skills', 'employments', 'internships'])
+            'status' => 'success',
+            'data' => $user
         ]);
     }
 
