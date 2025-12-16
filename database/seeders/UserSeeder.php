@@ -12,12 +12,12 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $now = Carbon::now();
-        $password = Hash::make('Alumni@2025'); // Default password for all
+        $password = Hash::make('password123'); // Default password for all
 
         // 1. Super Admin (IT Support / Developer)
         DB::table('users')->insert([
             'name' => 'Super Admin',
-            'email' => 'admin@alumni.com',
+            'email' => 'admin@system.com',
             'password' => $password,
             'role' => 'super_admin',
             'status' => 'active',
@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
         // 2. Kaprodi (Admin Prodi)
         DB::table('users')->insert([
             'name' => 'Kaprodi Ilmu Komputer',
-            'email' => 'kaprodi@alumni.id',
+            'email' => 'kaprodi@unimed.ac.id',
             'password' => $password,
             'role' => 'admin',
             'status' => 'active',
@@ -40,7 +40,7 @@ class UserSeeder extends Seeder
         // 3. Dosen
         DB::table('users')->insert([
             'name' => 'Insan Taufik, S.Kom., M.Kom',
-            'email' => 'insantaufik@alumni.id',
+            'email' => 'insantaufik@unimed.ac.id',
             'password' => $password,
             'role' => 'dosen',
             'status' => 'active',
@@ -52,7 +52,7 @@ class UserSeeder extends Seeder
         // 4. Mahasiswa (On-going)
         DB::table('users')->insert([
             'name' => 'Mhs Semester Akhir',
-            'email' => 'mhs@student.alumni.id',
+            'email' => 'mhs@student.university.ac.id',
             'password' => $password,
             'role' => 'mahasiswa',
             'status' => 'active',

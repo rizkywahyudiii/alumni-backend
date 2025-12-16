@@ -25,7 +25,10 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('CORS_ALLOWED_ORIGINS', 'http://localhost:5173')],
+    'allowed_origins' => [
+        env('CORS_ALLOWED_ORIGINS',
+        'https://alumni-frontend-flame.vercel.app',
+        'http://localhost:5173')],
 
     'allowed_origins_patterns' => [],
 
