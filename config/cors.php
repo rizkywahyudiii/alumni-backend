@@ -25,9 +25,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'http://localhost:5173', // Origin Frontend Vite
-    ],
+    'allowed_origins' => [env('CORS_ALLOWED_ORIGINS', 'http://localhost:5173')],
 
     'allowed_origins_patterns' => [],
 
