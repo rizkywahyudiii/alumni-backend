@@ -1,5 +1,21 @@
 <?php
 
+// --- TAMBAHAN KHUSUS DEPLOYMENT (BYPASS CORS) ---
+// Ganti URL ini dengan URL Vercel kamu yang persis
+$allowedOrigin = 'https://alumni-frontend-flame.vercel.app';
+
+header("Access-Control-Allow-Origin: $allowedOrigin");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization, X-Requested-With, Application");
+header("Access-Control-Allow-Credentials: true");
+
+// Tangani Request Preflight (OPTIONS) langsung di sini
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+// ------------------------------------------------
+
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
