@@ -12,15 +12,16 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $now = Carbon::now();
-        $password = Hash::make('password123'); // Default password for all
+        $password = Hash::make('AlumniApp@20205'); // Default password for all
 
         // 1. Super Admin (IT Support / Developer)
         DB::table('users')->insert([
             'name' => 'Super Admin',
-            'email' => 'admin@system.com',
+            'email' => 'admin@alumni.id',
             'password' => $password,
             'role' => 'super_admin',
             'status' => 'active',
+            'email_verified_at' => $now,
             'created_at' => $now,
             'updated_at' => $now,
         ]);
@@ -28,10 +29,11 @@ class UserSeeder extends Seeder
         // 2. Kaprodi (Admin Prodi)
         DB::table('users')->insert([
             'name' => 'Kaprodi Ilmu Komputer',
-            'email' => 'kaprodi@unimed.ac.id',
+            'email' => 'kaprodi@alumni.id',
             'password' => $password,
             'role' => 'admin',
             'status' => 'active',
+            'email_verified_at' => $now,
             'nip' => '198001012000121001',
             'created_at' => $now,
             'updated_at' => $now,
@@ -39,11 +41,12 @@ class UserSeeder extends Seeder
 
         // 3. Dosen
         DB::table('users')->insert([
-            'name' => 'Insan Taufik, S.Kom., M.Kom',
-            'email' => 'insantaufik@unimed.ac.id',
+            'name' => 'Dosen Web Modern',
+            'email' => 'dosen@alumni.id',
             'password' => $password,
             'role' => 'dosen',
             'status' => 'active',
+            'email_verified_at' => $now,
             'nip' => '198502022010121002',
             'created_at' => $now,
             'updated_at' => $now,
@@ -51,11 +54,12 @@ class UserSeeder extends Seeder
 
         // 4. Mahasiswa (On-going)
         DB::table('users')->insert([
-            'name' => 'Mhs Semester Akhir',
-            'email' => 'mhs@student.university.ac.id',
+            'name' => 'Mahasiswa Semester Akhir',
+            'email' => 'mhs@alumni.id',
             'password' => $password,
             'role' => 'mahasiswa',
             'status' => 'active',
+            'email_verified_at' => $now,
             'nim' => '210001001',
             'angkatan' => 2021,
             'created_at' => $now,
@@ -69,6 +73,7 @@ class UserSeeder extends Seeder
             'password' => $password,
             'role' => 'alumni',
             'status' => 'graduated',
+            'email_verified_at' => $now,
             'nim' => '170001001',
             'angkatan' => 2018,
             'tahun_lulus' => 2022,
