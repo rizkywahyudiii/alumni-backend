@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Job;
+use Carbon\Carbon;
 use App\Models\TracerStudy;
 use App\Models\AlumniProfile; // Pastikan model ini ada, atau pakai relasi user->alumniProfile()
 
@@ -15,6 +16,7 @@ class DataDummySeeder extends Seeder
     {
         // Gunakan Faker bahasa Indonesia biar datanya riil
         $faker = \Faker\Factory::create('id_ID');
+        $now = Carbon::now();
 
         $this->command->info('🌱 Mulai menanam data dummy...');
 
@@ -50,6 +52,7 @@ class DataDummySeeder extends Seeder
                 'nim' => $faker->unique()->numerify('419#####'),
                 'angkatan' => $faker->numberBetween(2015, 2020),
                 'tahun_lulus' => $faker->numberBetween(2019, 2024),
+                'email_verified_at' => $now,
                 'role' => 'alumni',
             ]);
 

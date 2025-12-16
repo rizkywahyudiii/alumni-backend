@@ -12,7 +12,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $now = Carbon::now();
-        $password = Hash::make('AlumniApp@20205'); // Default password for all
+        $password = Hash::make('AlumniApp@2025'); // Default password for all
 
         // 1. Super Admin (IT Support / Developer)
         DB::table('users')->insert([
