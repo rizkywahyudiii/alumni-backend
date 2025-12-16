@@ -1,8 +1,8 @@
-# Gunakan image PHP dengan Apache agar langsung jalan tanpa Nginx tambahan
+# Gunakan image PHP dengan Apache agar langsung jalan tanpa konfigurasi Nginx ribet
 FROM php:8.2-apache
 
-# 1. Install dependency sistem operasi yang dibutuhkan
-# libzip-dev SANGAT PENTING untuk extension zip
+# 1. Install dependency sistem operasi
+# PENTING: 'libzip-dev' dan 'zip' ditambahkan di sini untuk mengatasi error Maatwebsite Excel
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 2. Install Ekstensi PHP
-# Tambahkan 'zip' di sini untuk memperbaiki error kamu
+# PENTING: 'zip' ditambahkan di baris ini
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql gd zip bcmath
 
@@ -37,8 +37,7 @@ WORKDIR /var/www/html
 COPY . .
 
 # 8. Install dependensi Laravel via Composer
-# --no-dev: agar library testing tidak ikut diinstall (lebih ringan)
-# --ignore-platform-reqs: opsi darurat jika ada ketidakcocokan versi php minor
+# --ignore-platform-reqs: Opsional, tambahkan jika masih ada error versi PHP lokal vs server
 RUN composer install --no-dev --optimize-autoloader
 
 # 9. Atur hak akses folder storage dan bootstrap/cache agar bisa ditulisi
