@@ -86,6 +86,10 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return response()->json(['status' => 'success', 'message' => 'Registrasi berhasil'], 201);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Registrasi berhasil',
+            'email_verified' => $user->hasVerifiedEmail(),
+        ], 201);
     }
 }
