@@ -34,6 +34,11 @@ class AuthenticatedSessionController extends Controller
         // 3. Ambil User
         $user = User::where('email', $request->email)->firstOrFail();
 
+        // User lama yang belum verifikasi ikut di-bypass
+        if (config('app.bypass_email_verification') && ! $user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+        }
+
         // 4. Hapus Token Lama (Opsional: Agar 1 user cuma punya 1 token aktif)
         // $user->tokens()->delete();
 

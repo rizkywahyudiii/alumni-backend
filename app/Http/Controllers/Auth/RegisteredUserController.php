@@ -78,7 +78,11 @@ class RegisteredUserController extends Controller
             ]
         ]);
 
-        event(new Registered($user));
+        if (config('app.bypass_email_verification')) {
+            $user->markEmailAsVerified();
+        } else {
+            event(new Registered($user));
+        }
 
         Auth::login($user);
 

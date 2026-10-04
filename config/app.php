@@ -15,6 +15,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    // true = user dianggap sudah verifikasi email (tanpa kirim email)
+    'bypass_email_verification' => env('BYPASS_EMAIL_VERIFICATION', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
