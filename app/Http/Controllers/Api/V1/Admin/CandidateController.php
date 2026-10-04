@@ -55,6 +55,6 @@ class CandidateController extends Controller
     // 3. Update Download Template
     public function downloadTemplate()
     {
-        return Excel::download(new AlumniCandidateTemplate, 'template_master_alumni.xlsx');
+        return response()->download(resource_path('template_master_alumni.xlsx'));
     }
 }
