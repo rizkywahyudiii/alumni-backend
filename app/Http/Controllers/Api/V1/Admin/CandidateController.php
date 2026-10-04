@@ -55,6 +55,8 @@ class CandidateController extends Controller
     // 3. Update Download Template
     public function downloadTemplate()
     {
-        return response()->download(resource_path('template_master_alumni.xlsx'));
+        return response()->download(resource_path('template_master_alumni.xlsx'), 'template_master_alumni.xlsx', [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
     }
 }
