@@ -13,7 +13,7 @@ class AlumniProfile extends Model
 
     protected $casts = [
         'privacy_settings' => 'array', // Otomatis convert JSON DB ke Array PHP
-        'date_of_birth' => 'date',
+        'date_of_birth' => 'date:Y-m-d',
     ];
 
     public function user()

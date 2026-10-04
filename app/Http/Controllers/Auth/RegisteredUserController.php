@@ -20,33 +20,51 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
+    /**
+     * Tombol "Cek Data": cocokkan NIM + tanggal lahir, kembalikan nama untuk auto-fill.
+     */
+    public function check(Request $request): JsonResponse
+    {
+        $request->validate([
+            'nim' => ['required', 'string', 'max:20'],
+            'date_of_birth' => ['required', 'date'],
+        ]);
+
+        $candidate = $this->verifyCandidate($request);
+
+        if (User::where('nim', $candidate->nim)->exists()) {
+            return response()->json(['message' => 'NIM ini sudah terdaftar. Silakan login.'], 422);
+        }
+
+        return response()->json(['name' => $candidate->name]);
+    }
+
+    // Pesan sengaja disamakan agar tidak bocor mana yang salah (NIM atau tanggal lahir)
+    private function verifyCandidate(Request $request): AlumniCandidate
+    {
+        $candidate = AlumniCandidate::where('nim', $request->nim)->first();
+
+        if (! $candidate || $candidate->date_of_birth !== $request->date_of_birth) {
+            abort(response()->json([
+                'message' => 'NIM atau tanggal lahir tidak sesuai dengan data alumni.',
+            ], 422));
+        }
+
+        return $candidate;
+    }
+
     public function store(Request $request): JsonResponse
     {
         // 1. Validasi (Sama seperti sebelumnya)
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'nim' => ['required', 'string', 'max:20', 'unique:'.User::class],
             'date_of_birth' => ['required', 'date'],
         ]);
 
-        // 2. Cek Master Data
-        $candidate = AlumniCandidate::where('nim', $request->nim)->first();
-
-        if (!$candidate) {
-            return response()->json([
-                'message' => 'NIM tidak ditemukan dalam Data Alumni.',
-                'errors' => ['nim' => ['NIM tidak terdaftar.']]
-            ], 422);
-        }
-
-        if ($candidate->date_of_birth !== $request->date_of_birth) {
-            return response()->json([
-                'message' => 'Verifikasi gagal. Tanggal lahir salah.',
-                'errors' => ['date_of_birth' => ['Tanggal lahir tidak cocok.']]
-            ], 422);
-        }
+        // 2. Cek Master Data (nama diambil dari data kandidat, bukan input user)
+        $candidate = $this->verifyCandidate($request);
 
         // 🔥 LOGIC BARU: Tentukan Role & Tahun Lulus
         // Jika tahun_lulus ada isinya -> Alumni

@@ -16,16 +16,20 @@ class DirectoryController extends Controller
         $year    = $request->query('year'); // Note: Frontend kirim 'year' untuk angkatan atau lulus?
 
         // Query Dasar: Ambil User active
-        $query = User::with(['alumniProfile', 'tracerStudy'])
+        $query = User::with([
+                'alumniProfile',
+                'tracerStudy',
+                // Pekerjaan terbaru dulu, untuk label karir di kartu directory
+                'employments' => fn ($q) => $q->select('id', 'user_id', 'title', 'company_name', 'is_public', 'start_date')
+                    ->latest('start_date'),
+            ])
             ->where('status', 'active') // Pastikan hanya user aktif
+            ->where('role', 'alumni')   // Directory khusus alumni
             ->where(function ($q) {
-                // LOGIKA BARU:
-                // 1. User yang punya profil DAN public
+                // Profil public, ATAU belum punya profil (default tampil)
                 $q->whereHas('alumniProfile', function ($subQ) {
                     $subQ->whereJsonContains('privacy_settings->show_in_directory', true);
                 })
-                // 2. ATAU User yang belum punya profil sama sekali (seperti Super Admin/New User)
-                // Jika ingin admin tetap muncul, pakai ini:
                 ->orWhereDoesntHave('alumniProfile');
             });
 
@@ -47,6 +51,11 @@ class DirectoryController extends Controller
 
         // Eksekusi (Pagination 12 per halaman)
         $alumni = $query->latest()->paginate(12);
+
+        // Pekerjaan private: jangan kirim jabatan & nama perusahaan ke frontend
+        $alumni->getCollection()->each(function ($user) {
+            $user->employments->where('is_public', false)->each->makeHidden(['title', 'company_name']);
+        });
 
         // Bungkus pakai Resource (Opsional tapi disarankan agar struktur konsisten)
         // return \App\Http\Resources\UserResource::collection($alumni);

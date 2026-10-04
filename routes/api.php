@@ -45,6 +45,10 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware('guest')
     ->name('api.login');
 
+Route::post('/register/check', [RegisteredUserController::class, 'check'])
+    ->middleware(['guest', 'throttle:10,1']) // cegah tebak-tebakan tanggal lahir
+    ->name('api.register.check');
+
 Route::post('/register', [RegisteredUserController::class, 'store'])
     ->middleware('guest')
     ->name('api.register');
