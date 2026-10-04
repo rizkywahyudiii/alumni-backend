@@ -38,6 +38,7 @@ class AlumniCandidateImport implements ToModel, WithHeadingRow
                 'name'          => $row['nama_lengkap'],
                 'prodi'         => $row['prodi'] ?? null,
                 'angkatan'      => $row['angkatan'] ?? null,
+                'tahun_lulus'   => $row['tahun_lulus'] ?? null,
                 'date_of_birth' => $dob,
             ]
         );

@@ -15,6 +15,7 @@ class AlumniCandidate extends Model
         'name',
         'date_of_birth',
         'prodi',
-        'angkatan'
+        'angkatan',
+        'tahun_lulus',
     ];
 }

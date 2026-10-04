@@ -17,6 +17,7 @@ class AlumniCandidateTemplate implements FromArray, WithHeadings, WithStyles, Sh
             'nama_lengkap',
             'prodi',
             'angkatan',
+            'tahun_lulus', // Kosongkan jika masih mahasiswa aktif
             'tanggal_lahir', // Berikan petunjuk format di header jika perlu
         ];
     }
@@ -25,8 +26,8 @@ class AlumniCandidateTemplate implements FromArray, WithHeadings, WithStyles, Sh
     {
         // Data Dummy sebagai contoh format
         return [
-            ['4183111050', 'Contoh Mahasiswa 1', 'Ilmu Komputer', '2020', '2000-01-30'],
-            ['4183111051', 'Contoh Mahasiswa 2', 'Sistem Informasi', '2021', '2001-12-25'],
+            ['4183111050', 'Contoh Mahasiswa 1', 'Ilmu Komputer', '2020', '2024', '2000-01-30'],
+            ['4183111051', 'Contoh Mahasiswa 2', 'Sistem Informasi', '2021', '', '2001-12-25'],
         ];
     }
 
