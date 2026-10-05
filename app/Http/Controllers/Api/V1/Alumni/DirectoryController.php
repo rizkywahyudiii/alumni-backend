@@ -23,7 +23,7 @@ class DirectoryController extends Controller
                 'employments' => fn ($q) => $q->select('id', 'user_id', 'title', 'company_name', 'is_public', 'start_date')
                     ->latest('start_date'),
             ])
-            ->where('status', 'active') // Pastikan hanya user aktif
+            ->whereIn('status', ['active', 'graduated']) // Alumni lulus tetap tampil, 'inactive' tidak
             ->where('role', 'alumni')   // Directory khusus alumni
             ->where(function ($q) {
                 // Profil public, ATAU belum punya profil (default tampil)
